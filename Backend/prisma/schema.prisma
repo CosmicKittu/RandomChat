@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userID             Int               @id @default(autoincrement()) @map("user_id")
+  email              String            @unique
+  name               String
+  createdAt          DateTime          @default(now()) @map("created_at")
+  googleId           String            @unique @map("google_id")
+  picture            String?
+  googleRefreshToken String?           @map("google_refresh_token")
+  googleAccessToken  String?           @map("google_access_token")
+  chatParticipants   ChatParticipant[]
+  sentMessages       Message[]
+
+  @@map("users")
+}
+
+model ChatParticipant {
+  userID   Int      @map("user_id")
+  chatID   Int      @map("chat_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+  role     String   @default("member")
+
+  user User @relation(fields: [userID], references: [userID], onDelete: Cascade)
+  chat Chat @relation(fields: [chatID], references: [chatID], onDelete: Cascade)
+
+  @@id([userID, chatID])
+  @@map("chat_participants")
+}
+
+model Chat {
+  chatID    Int      @id @default(autoincrement()) @map("chat_id")
+  chatName  String?  @map("chat_name")
+  createdAt DateTime @default(now()) @map("created_at")
+  isGroup   Boolean  @default(false) @map("is_group")
+
+  participants ChatParticipant[]
+  messages     Message[]
+
+  @@map("chats")
+}
+
+model Message {
+  messageID Int      @id @default(autoincrement()) @map("message_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  content   String
+  chatID    Int      @map("chat_id")
+  senderID  Int      @map("sender_id")
+
+  chat   Chat @relation(fields: [chatID], references: [chatID], onDelete: Cascade)
+  sender User @relation(fields: [senderID], references: [userID], onDelete: Cascade)
+
+  @@map("messages")
+}

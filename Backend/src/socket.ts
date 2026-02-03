@@ -17,6 +17,8 @@ declare module "socket.io" {
   }
 }
 
+const waitingUser: Socket | null = null;
+
 const wrap =
   (middleware: any) => (socket: Socket, next: (err?: Error) => void) =>
     middleware(socket.request, {}, next);
@@ -42,7 +44,16 @@ export default function initIO(io: Server) {
     }
   });
 
+  ///////////////////////now real thing begin/////////////////////////////
+
   io.on("connection", (socket: Socket) => {
     console.log(`Socket connected: ${socket.id}`);
+    socket.on("join_random", () => {
+      if (waitingUser) {
+        if (socket.id == waitingUser.id) {
+          return;
+        }
+      }
+    });
   });
 }

@@ -17,7 +17,7 @@ declare module "socket.io" {
   }
 }
 
-const waitingUser: Socket | null = null;
+let waitingUser: Socket | null = null;
 
 const wrap =
   (middleware: any) => (socket: Socket, next: (err?: Error) => void) =>
@@ -50,10 +50,38 @@ export default function initIO(io: Server) {
     console.log(`Socket connected: ${socket.id}`);
     socket.on("join_random", () => {
       if (waitingUser) {
+        const partner = waitingUser;
         if (socket.id == waitingUser.id) {
           return;
         }
+        waitingUser = null;
+
+        const roomID = `room_${partner.id}_${socket.id}`;
+        console.log(roomID);
+
+        socket.join(roomID);
+        partner.join(roomID);
+
+        io.to(roomID).emit("match_found", { roomID });
+        console.log(`Matched ${socket.id} with ${partner.id}`);
+      } else {
+        waitingUser = socket;
+        socket.emit("waiting");
+        console.log("waiting");
       }
+    });
+
+    socket.on("o_message", (data: { roomID: string; message: string }) => {
+      socket.to(data.roomID).emit("I_message", {
+        message: data.message,
+        sender: socket.id,
+      });
+    });
+    socket.on("disconnect", () => {
+      if (waitingUser && waitingUser.id === socket.id) {
+        waitingUser = null;
+      }
+      console.log("diss");
     });
   });
 }

@@ -1,30 +1,26 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-// import { useState, useEffect } from "react";
-import Home from "./Pages/home";
-import Login from "./Pages/login";
-import Chat from "./Pages/chat";
-import About from "./Pages/about";
 
+import { BrowserRouter } from "react-router-dom"
+import { Route, Routes } from "react-router-dom"
+import Home from "./pages/home"
+import Login from "./pages/login"
+import Chat from "./pages/chat"
+import About from "./pages/about"
+import Layout from "./layout/sidebar"
 function App() {
-  // const [user, setUser] = useState(null)
-  // const [loading, setloading] = useState(true)
-
-  // useEffect(() => {
-
-  // }, [])
   return (
-    <>
-      <BrowserRouter>
-        {/* Routes */}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/chat" element={<Layout />}>
+          <Route index element={<h1>hello</h1>} />
+          <Route path=":id" element={<h1>hello</h1>} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+
+  )
 }
 
-export default App;
+export default App

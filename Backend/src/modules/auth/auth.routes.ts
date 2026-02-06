@@ -22,7 +22,7 @@ authrouter.get(
   "/google/callback",
   passport.authenticate("google", {
     failureRedirect: "/failure",
-    successRedirect: "/",
+    // successRedirect: "/",
   }),
   googleCallback,
 );

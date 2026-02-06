@@ -4,6 +4,7 @@ export function loginWithGoogle(req: Request, res: Response) {}
 
 export function googleCallback(req: Request, res: Response) {
   console.log("google Called us back");
+  res.redirect("http://localhost:5173/");
 }
 
 export function logout(req: Request, res: Response) {}
